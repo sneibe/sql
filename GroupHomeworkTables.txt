@@ -1,0 +1,72 @@
+DROP TABLE person
+    CASCADE CONSTRAINTS; 
+    
+DROP TABLE phone
+    CASCADE CONSTRAINTS;
+    
+DROP TABLE personphone
+    CASCADE CONSTRAINTS; 
+
+DROP TABLE address
+ CASCADE CONSTRAINTS;
+ 
+DROP TABLE personaddress
+    CASCADE CONSTRAINTS; 
+
+DROP TABLE club
+    CASCADE CONSTRAINTS; 
+
+DROP TABLE mbrshipfee
+ CASCADE CONSTRAINTS;
+ 
+
+CREATE TABLE person (
+personid NUMBER(6),
+CONSTRAINT person_personid_pk PRIMARY KEY (personid));
+
+--The Table below creates the phone table.Where Phone Types: M= Mobile H=Home W=Work
+CREATE TABLE phone (
+phoneid NUMBER (6),
+pnumber NUMBER (10) NOT NULL,
+ptype  CHAR (1) NOT NULL,
+CONSTRAINT phone_ptype_cc CHECK ((ptype='M') OR (ptype='H') OR (ptype = 'W')),
+CONSTRAINT phone_phoneid_pk PRIMARY KEY (phoneid));
+
+--The table below creates the M:M table: personphone
+CREATE TABLE personphone (
+personid NUMBER (6) NOT NULL,
+phoneid NUMBER (6) NOT NULL, 
+CONSTRAINT personphone_personid_pk PRIMARY KEY (personid,phoneid),
+CONSTRAINT personphone_personid_fk FOREIGN KEY (personid) REFERENCES person (personid),
+CONSTRAINT personphone_phoneid_fk FOREIGN KEY (phoneid) REFERENCES phone (phoneid));
+
+--The table below creates the address table
+CREATE TABLE address (
+addrid NUMBER (6) NOT NULL,
+strt VARCHAR2 (35) NOT NULL,
+city VARCHAR2 (35) NOT NULL,
+ste VARCHAR2 (2) NOT NULL,
+zipcode VARCHAR2 (10) NOT NULL,
+CONSTRAINT addr_addrid_pk PRIMARY KEY(addrid));
+
+--The table below creates the M:M table: personaddress
+CREATE TABLE personaddress (
+addrid NUMBER (5) NOT NULL, 
+personid NUMBER (5) NOT NULL,
+addrtype CHAR (1) NOT NULL,
+CONSTRAINT addr_addrtype_cc CHECK ((addrtype= 'P') OR  (addrtype= 'S')),
+CONSTRAINT personaddr_peraddr_pk PRIMARY KEY (addrid,personid),
+CONSTRAINT personaddr_personid_fk FOREIGN KEY (personid) REFERENCES person (personid),
+CONSTRAINT personaddr_addrid_fk FOREIGN KEY (addrid) REFERENCES address (addrid));
+
+
+-The table below creates Services table
+CREATE TABLE services
+servicesid NUMBER (6)
+servicename VARCHAR2 (35) NOT NULL,
+CONSTRAINT services_servicesid_PK Primary Key (servicesid));
+
+—The table below creates Services provided M:M Table
+CREATE TABLE Services_Provided 
+schoolid NUMBER (6),
+servicesid NUMBER (6),

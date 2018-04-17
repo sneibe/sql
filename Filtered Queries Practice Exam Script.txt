@@ -1,0 +1,125 @@
+/* 
+IS 344 Filtered Queries Practice Exam Script 
+Care has been taken to use object (e.g., table, constraint) names that won't duplicate what you are doing for your course project.
+*/
+
+--Code to drop the table and any associated constraints
+
+DROP TABLE classact
+	CASCADE CONSTRAINTS;
+
+
+--Code to drop the sequence object
+
+DROP SEQUENCE act_id_seq;
+
+--Code to create the classact table
+
+CREATE TABLE classact (
+  act_per_ID NUMBER(5) NOT NULL,
+  act_f_name VARCHAR2(50) NOT NULL,
+  act_l_name VARCHAR2(50) NOT NULL,
+  act_gender CHAR(1) NOT NULL,
+  act_dob DATE NOT NULL,
+  act_ethnicity VARCHAR2(20) NOT NULL,
+  act_date_added DATE NOT NULL,
+CONSTRAINT classact_act_ID_pk PRIMARY KEY (act_per_ID),
+CONSTRAINT classact_ethnicity_cc CHECK (act_ethnicity IN ('African American', 'Caucasian', 'Asian', 'American Indian', 'Hispanic')),
+CONSTRAINT act_gender_cc CHECK (act_gender IN ('M', 'F')));
+
+--The following sequence populates the classact id.
+
+CREATE SEQUENCE act_id_seq
+	START WITH 10000
+	INCREMENT BY 1
+	NOCACHE;
+
+
+--Inserting values into the classact table
+
+
+INSERT INTO classact
+	VALUES(act_id_seq.NEXTVAL,'Adam','Jackson','M',TO_DATE('SEP 23,1980','MON DD,YYYY'), 'Caucasian', '24-JAN-2012');
+
+INSERT INTO classact
+	VALUES(act_id_seq.NEXTVAL,'Jill','Hass','F',TO_DATE('NOV 01, 1977','MON DD,YYYY'), 'African American', '8-MAR-2012');
+	
+INSERT INTO classact	
+	VALUES(act_id_seq.NEXTVAL,'Henry','Hass','M',TO_DATE('JUN 10, 1987','MON DD,YYYY'), 'Caucasian', '2-JAN-2012');
+
+INSERT INTO classact	
+	VALUES(act_id_seq.NEXTVAL,'Matt','Hunt','M',TO_DATE('NOV 21, 1982','MON DD,YYYY'), 'American Indian', '16-JUL-2012');
+
+INSERT INTO classact
+	VALUES(act_id_seq.NEXTVAL,'Tim','Possehl','M',TO_DATE('JUN 10, 1987','MON DD,YYYY'), 'American Indian', '13-AUG-2012');
+
+INSERT INTO classact
+	VALUES(act_id_seq.NEXTVAL,'Emily','King','F',TO_DATE('SEP 14, 1989','MON DD,YYYY'), 'Caucasian', '5-MAY-2012');
+	
+INSERT INTO classact	
+	VALUES(act_id_seq.NEXTVAL,'Jordan','Nguyen','M',TO_DATE('JUN 09, 1989','MON DD,YYYY'), 'Asian', '29-APR-2012');
+
+INSERT INTO classact	
+	VALUES(act_id_seq.NEXTVAL,'Zim','Yang','M',TO_DATE('JUN 09, 1989','MON DD,YYYY'), 'Asian', '12-MAR-2012');
+
+INSERT INTO classact
+	VALUES(act_id_seq.NEXTVAL,'Jill','Jackson','F',TO_DATE('SEP 23,1980','MON DD,YYYY'), 'Caucasian', '24-JAN-2012');
+
+INSERT INTO classact
+	VALUES(act_id_seq.NEXTVAL,'Jill','Jones','F',TO_DATE('AUG 23, 1975','MON DD,YYYY'), 'Caucasian', '10-DEC-2011');
+	
+INSERT INTO classact	
+	VALUES(act_id_seq.NEXTVAL,'Harvey','Johnson','M',TO_DATE('JUN 21, 1973','MON DD,YYYY'), 'American Indian', '23-NOV-2011');
+
+INSERT INTO classact	
+	VALUES(act_id_seq.NEXTVAL,'Maria','Vasquez','F',TO_DATE('FEB 28, 1985', 'MON DD,YYYY'), 'Hispanic', '16-OCT-2011');
+
+INSERT INTO classact
+	VALUES(act_id_seq.NEXTVAL,'Timothy','Jackson','M',TO_DATE('SEP 3, 1982','MON DD,YYYY'), 'African American', '3-MAY-2012');
+
+INSERT INTO classact
+	VALUES(act_id_seq.NEXTVAL,'Margaret','Brown','F',TO_DATE('FEB 16, 1980','MON DD,YYYY'), 'Caucasian', '11-JAN-2011');
+	
+INSERT INTO classact	
+	VALUES(act_id_seq.NEXTVAL,'Lee','Nguyen','M',TO_DATE('DEC 19, 1985','MON DD,YYYY'), 'Asian', '7-MAY-2012');
+
+INSERT INTO classact	
+	VALUES(act_id_seq.NEXTVAL,'Ji','Yang','M',TO_DATE('FEB 22, 1983','MON DD,YYYY'), 'Asian', '15-APR-2012');
+
+INSERT INTO classact
+	VALUES(act_id_seq.NEXTVAL,'John','Johnson','M',TO_DATE('FEB 28, 1985','MON DD,YYYY'), 'African American', '6-NOV-2011');
+
+INSERT INTO classact
+	VALUES(act_id_seq.NEXTVAL,'John','Johnson','M',TO_DATE('AUG 17, 1979','MON DD,YYYY'), 'Caucasian', '31-MAY-2012');
+
+INSERT INTO classact
+	VALUES(act_id_seq.NEXTVAL,'Tim','Johnson','M',TO_DATE('AUG 17, 1979','MON DD,YYYY'), 'Caucasian', '31-MAY-2012');
+	
+INSERT INTO classact	
+	VALUES(act_id_seq.NEXTVAL,'Susan', 'Smith','F',TO_DATE('JAN 23, 1980','MON DD,YYYY'), 'Caucasian', '7-MAY-2012');
+
+INSERT INTO classact	
+	VALUES(act_id_seq.NEXTVAL,'Susan', 'Smith','F',TO_DATE('MAR 5, 1980','MON DD,YYYY'), 'Caucasian', '15-APR-2012');
+
+INSERT INTO classact	
+	VALUES(act_id_seq.NEXTVAL,'Maria','Gonzalez','F',TO_DATE('OCT 15, 1972','MON DD,YYYY'), 'Hispanic', '4-SEP-2012');
+
+INSERT INTO classact
+	VALUES(act_id_seq.NEXTVAL,'Margaret','King','F',TO_DATE('FEB 16, 1980','MON DD,YYYY'), 'African American', '30-JUN-2012');
+
+
+COMMIT;
+
+--Code to display contents of table
+SELECT * FROM classact;
+
+
+
+
+
+
+
+
+
+
+

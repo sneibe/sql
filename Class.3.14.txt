@@ -1,0 +1,169 @@
+/* 
+Practice exercises to accompany PPT Queries, Subqueries, Views
+
+NOTE: YOU MAY HAVE TO OPEN THIS SCRIPT TO FULL SCREEN TO PREVENT ERROR MESSAGES RESULTING FROM WRAPPED TEXT.
+
+*/
+
+
+/* Practice creating tables with FKs and CC. Create a composite PK.*/
+
+DROP TABLE region CASCADE CONSTRAINTS;
+DROP TABLE stor CASCADE CONSTRAINTS;
+DROP TABLE dept CASCADE CONSTRAINTS;
+DROP TABLE emp CASCADE CONSTRAINTS;
+
+CREATE TABLE region (
+  reg_code NUMBER (4),
+  reg_descr VARCHAR2 (25),
+CONSTRAINT reg_code_pk PRIMARY KEY (reg_code));
+
+CREATE TABLE stor (
+  str_code NUMBER (4),
+  str_name VARCHAR2 (50),
+  reg_code NUMBER (4),
+CONSTRAINT stor_code_pk PRIMARY KEY (str_code),
+CONSTRAINT stor_reg_fk FOREIGN KEY (reg_code) REFERENCES region (reg_code));
+
+
+CREATE TABLE dept (
+  dept_name VARCHAR2(30),
+  str_code NUMBER (4),
+  phone VARCHAR2 (15),
+CONSTRAINT dept_name_code_pk PRIMARY KEY (dept_name, str_code),
+CONSTRAINT dept_str_code_fk FOREIGN KEY (str_code) REFERENCES stor (str_code),
+CONSTRAINT dept_name_cc CHECK (dept_name IN ( 'Building Materials', 'Floor Coverings', 'Commercial Contractors')));
+
+
+
+CREATE TABLE emp (
+  emp_code NUMBER (7),
+  title VARCHAR2 (25),
+  fname VARCHAR2 (55) NOT NULL,
+  lname VARCHAR2 (55) NOT NULL,
+  dob DATE,
+  ytd_sales NUMBER(8,2),
+  dept_name VARCHAR2(30),
+  str_code NUMBER (4),
+CONSTRAINT emp_code_pk PRIMARY KEY (emp_code),
+CONSTRAINT emp_dept_str_fk FOREIGN KEY (dept_name, str_code) REFERENCES dept (dept_name, str_code));
+
+
+
+
+/* Populating the tables */
+
+
+INSERT INTO region
+    VALUES (1234, 'Eau Claire');
+
+INSERT INTO region
+    VALUES (2234, 'Chippewa Valley');
+
+
+
+INSERT INTO stor
+  VALUES (1234, 'Eau Claire East', 1234);
+  
+INSERT INTO stor
+  VALUES (2234, 'Eau Claire West', 1234);
+
+INSERT INTO stor
+  VALUES (3234, 'Chippewa Falls North', 2234);
+  
+INSERT INTO stor
+  VALUES (4234, 'Chippewa Falls South', 2234);
+
+
+
+
+INSERT INTO dept
+  VALUES ('Building Materials', 1234, '715-111-1111');
+
+INSERT INTO dept
+  VALUES ('Building Materials', 2234, '715-112-1111');
+
+INSERT INTO dept
+  VALUES ('Building Materials', 3234, '715-1132-1111');
+
+
+INSERT INTO dept
+  VALUES ('Floor Coverings', 1234, '715-111-2222');
+
+INSERT INTO dept
+  VALUES ('Floor Coverings', 2234, '715-112-2222');
+
+INSERT INTO dept
+  VALUES ('Floor Coverings', 3234, '715-113-2222');
+
+
+INSERT INTO dept
+  VALUES ('Commercial Contractors', 1234, '715-111-3333');
+
+INSERT INTO dept
+  VALUES ('Commercial Contractors', 2234, '715-112-3333');
+
+
+INSERT INTO dept
+  VALUES ('Commercial Contractors', 3234, '715-113-3333');
+
+
+
+INSERT INTO emp
+  VALUES (1234567, 'Big Boss', 'Jared', 'Leable', '23-FEB-1982', 55000, 'Building Materials', 1234);
+
+
+INSERT INTO emp
+  VALUES (2234567, 'Tile Guru', 'Matthew', 'Van Stappen', '11-NOV-1981', 75000, 'Floor Coverings', 1234);
+
+
+INSERT INTO emp
+  VALUES (3234567, 'Leading Consultant', 'Kayla', 'Olsen', '03-OCT-1981', 750000, 'Commercial Contractors', 1234);
+
+
+INSERT INTO emp
+  VALUES (4234567, 'Supervisor', 'Erika', 'Winberg', '05-MAY-1980', 755000, 'Commercial Contractors', 2234);
+
+
+INSERT INTO emp
+  VALUES (5234567, 'Auditor', 'D''Arcy', 'Becker', '17-JUL-1965', 0, 'Commercial Contractors', 1234);
+
+SELECT * FROM stor;
+SELECT * FROM region;
+SELECT * FROM dept;
+SELECT * FROM emp;
+
+COMMIT;
+
+—What are the names of the stores in the Chippewa Valley?
+(EQUIJOIN)
+SELECT str_name FROM 
+stor,region
+WHERE stor.reg_code = region.reg_code
+AND reg_descr = 'Chippewa Valley';
+
+
+(INNER JOIN)
+SELECT str_name FROM stor INNER JOIN region
+WHERE stor.reg_code = region.reg_code;
+
+—Provide the name and year-to-date sales volume for the person who generated the largest sales volume at the Eau Claire East store. 
+
+
+SELECT fname,lname, ytd_sales FROM emp 
+WHERE ytd_sales = (
+SELECT MAX (ytd_sales) FROM emp INNER JOIN stor USING (str_code) 
+WHERE str_name = 'Eau Claire East');
+
+—Provide the name and year-to-date sales volume for the person who generated the lowest sales volume at the Eau Claire East store (not counting those whose job is not in sales).       
+
+SELECT fname,lname,ytd_sales FROM emp 
+WHERE ytd_sales= (
+SELECT MIN (ytd_sales) FROM emp INNER JOIN stor USING (str_code)
+WHERE str_name = 'Eau Claire East'
+AND ytd_sales <> 0);
+
+—What is the total sales volume per store (requires a GROUP BY).
+
+SELECT str_name, SUM (ytd_sales) FROM emp INNER JOIN stor USING (str_code)GROUP BY str_name ;
+

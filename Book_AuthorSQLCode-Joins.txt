@@ -1,0 +1,106 @@
+/*
+Script for Create_Insert_MM_STUDENT.pptx
+Publisher, Book, Author, Book_Author
+*/
+
+
+/* Script to drop all tables */
+
+
+DROP TABLE pub CASCADE CONSTRAINTS;
+DROP TABLE author CASCADE CONSTRAINTS;
+DROP TABLE book CASCADE CONSTRAINTS;
+DROP TABLE book_author CASCADE CONSTRAINTS;
+
+
+/* Script to create publisher and author tables */
+
+
+CREATE TABLE pub (
+  pub_id NUMBER (5),
+  pub_name VARCHAR2(50) NOT NULL,
+CONSTRAINT pub_id_pk PRIMARY KEY (pub_id));
+
+CREATE TABLE author (
+  author_id NUMBER (5),
+  lname VARCHAR2(50) NOT NULL,
+CONSTRAINT author_id_pk PRIMARY KEY (author_id));
+
+CREATE TABLE book (
+ isbn NUMBER (5),
+ book_title VARCHAR2 (25) NOT NULL,
+ book_yr DATE NOT NULL,
+ book_genre VARCHAR2 (25),
+ pub_id NUMBER (5),
+CONSTRAINT book_isbn_pk PRIMARY KEY (isbn),
+CONSTRAINT book_pub_id_fk FOREIGN KEY (pub_id) References pub(pub_id));
+
+CREATE TABLE book_author (
+  author_id NUMBER (5) NOT NULL,
+  isbn NUMBER (5) NOT NULL,
+  author_order NUMBER (1) NOT NULL,
+CONSTRAINT book_author_isbn_pk PRIMARY KEY (author_id, isbn),
+CONSTRAINT authorid_fk FOREIGN KEY (author_id) REFERENCES author (author_id),
+CONSTRAINT isbn_fk FOREIGN KEY (isbn) references book (isbn));
+
+
+
+/* Script to populate the pub table*/
+
+INSERT INTO pub
+  VALUES (1111, 'McGraw Hill');
+INSERT INTO pub
+  VALUES (1112, 'Wiley');
+INSERT INTO pub
+  VALUES (1113, 'Oracle Press');
+
+
+/* Script to populate the author table */
+
+INSERT INTO author
+  VALUES (2222, 'Watson'); 
+INSERT INTO author
+  VALUES (2223, 'Brown');
+INSERT INTO author
+  VALUES (2224, 'Olson');
+
+--Script populates book table
+
+INSERT INTO book
+    Values (1234, 'Database Management', TO_DATE('NOV-2018', 'MON-YYYY'), 'Business',1112);
+INSERT INTO book
+    Values (1232, 'Intro To IS', TO_DATE('NOV-2018', 'MON-YYYY'), 'Business',1111);
+INSERT INTO book
+    Values (1235, 'Oracle SQL', TO_DATE('NOV-2018', 'MON-YYYY'), 'Business',1113);
+    
+--Script Populates Book_Author
+
+INSERT INTO book_author
+    VALUES (2222,1234,'1');
+INSERT INTO book_author 
+    VALUES (2224,1232,'1');
+INSERT INTO book_author
+    VALUES (2222, 1232,'2');
+INSERT INTO book_author
+    VALUES (2223,1235,'1');
+    
+-- Who was the lead author for the Introduction to IS Textbook?
+SELECT lname, book_title, author_order FROM book INNER JOIN book_author USING (ISBN) INNER JOIN author USING (author_id)
+WHERE author_order = 1
+AND book_title = 'Intro To IS';
+
+--How many  books did Watson Write?
+SELECT COUNT (author.author_id) AS "Number of Books Authored" FROM book_author, author
+WHERE book_author.AUTHOR_ID = author.AUTHOR_ID
+AND lname = 'Watson';
+
+--Which books were written by Watson?
+SELECT book_title  FROM book_author, author,book
+WHERE book_author.AUTHOR_ID = author.AUTHOR_ID
+AND book.isbn = book_author.isbn
+AND lname = 'Watson';
+
+SELECT * FROM book_author;
+SELECT * FROM book;
+SELECT * FROM pub;
+SELECT * FROM author;

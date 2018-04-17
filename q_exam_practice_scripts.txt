@@ -1,0 +1,211 @@
+/*
+Practice Exam. 
+Use with the MM_Recursive_Queries_Practice_exam2.doc file.
+Solutions are on Watson's website
+Drop, Create and Insert Statements
+*/
+
+
+
+--DROP Statements
+DROP TABLE  qdel  CASCADE CONSTRAINTS;
+DROP TABLE  qdept  CASCADE CONSTRAINTS;
+DROP TABLE  qemp  CASCADE CONSTRAINTS;
+DROP TABLE  qitem  CASCADE CONSTRAINTS;
+DROP TABLE  qsale  CASCADE CONSTRAINTS;
+DROP TABLE  qspl  CASCADE CONSTRAINTS;
+
+
+--CREATE Statements
+CREATE TABLE qitem
+(itemname VARCHAR2(30) NOT NULL,
+itemtype CHAR(1),
+itemcolor VARCHAR2(10),
+CONSTRAINT pk_qitem PRIMARY KEY (itemname));
+
+CREATE TABLE qemp
+(empno NUMBER (5)  NOT NULL,
+empfname VARCHAR2(15),
+empsalary NUMBER (6),
+deptname VARCHAR2(15),
+bossno NUMBER (5) ,
+CONSTRAINT pk_qemp PRIMARY KEY (empno));
+
+CREATE TABLE qdept
+(deptname VARCHAR2(15) NOT NULL,
+deptfloor NUMBER (5) ,
+deptphone NUMBER (5) ,
+empno NUMBER (5)  NOT NULL,
+CONSTRAINT pk_qdept PRIMARY KEY (deptname),
+CONSTRAINT fk_hasboss FOREIGN KEY  (empno) REFERENCES qemp (empno));
+
+CREATE TABLE qsale
+(saleno NUMBER (5)  NOT NULL,
+saleqty NUMBER (5) ,
+itemname VARCHAR2(30) NOT NULL,
+deptname VARCHAR2(15) NOT NULL,
+CONSTRAINT pk_saleno PRIMARY KEY (saleno),
+CONSTRAINT fk_isitem FOREIGN KEY  (itemname) REFERENCES qitem (itemname),
+CONSTRAINT fk_bydept FOREIGN KEY  (deptname) REFERENCES qdept (deptname));
+
+CREATE TABLE qspl
+(splno NUMBER (5)  NOT NULL,
+splname VARCHAR2(25),
+CONSTRAINT pk_qspl PRIMARY KEY (splno));
+
+CREATE TABLE qdel
+(delno NUMBER (5)  NOT NULL,
+delqty NUMBER (5)  NOT NULL,
+itemname VARCHAR2(30) NOT NULL,
+deptname VARCHAR2(15) NOT NULL,
+splno NUMBER (5)  NOT NULL,
+CONSTRAINT pk_qdel PRIMARY KEY (delno),
+CONSTRAINT fk_delitem FOREIGN KEY  (itemname) REFERENCES qitem (itemname),
+CONSTRAINT fk_hasdept FOREIGN KEY  (deptname) REFERENCES qdept (deptname),
+CONSTRAINT fk_hasspl FOREIGN KEY  (splno) REFERENCES qspl (splno));
+
+--INSERT Statements
+/* Item table: qitem */
+INSERT INTO qitem VALUES ('Boots - snakeproof','C','Green');
+INSERT INTO qitem VALUES ('Camel saddle','R','Brown');
+INSERT INTO qitem VALUES ('Compass','N','-');
+INSERT INTO qitem VALUES ('Elephant polo stick','R','Bamboo');
+INSERT INTO qitem VALUES ('Exploring in 10 Easy Lessons','B','-');
+INSERT INTO qitem VALUES ('Geo positioning system','N','-');
+INSERT INTO qitem VALUES ('Hammock','F','Khaki');
+INSERT INTO qitem VALUES ('Hat - polar explorer','C','White');
+INSERT INTO qitem VALUES ('How to Win Foreign Friends','B','-');
+INSERT INTO qitem VALUES ('Map case','E','Brown');
+INSERT INTO qitem VALUES ('Map measure','N','-');
+INSERT INTO qitem VALUES ('Pith helmet','C','Khaki');
+INSERT INTO qitem VALUES ('Pocket knife - Avon','E','Brown');
+INSERT INTO qitem VALUES ('Pocket knife - Nile','E','Brown');
+INSERT INTO qitem VALUES ('Safari chair','F','Khaki');
+INSERT INTO qitem VALUES ('Safari cooking kit','F','-');
+INSERT INTO qitem VALUES ('Sextant','N','-');
+INSERT INTO qitem VALUES ('Stetson','C','Black');
+INSERT INTO qitem VALUES ('Tent - 2 person','F','Khaki');
+INSERT INTO qitem VALUES ('Tent - 8 person','F','Khaki');
+
+/* Employee table: qemp */
+INSERT INTO qemp VALUES (1,'Alice',75000,'Management',0);
+INSERT INTO qemp VALUES (2,'Ned',45000,'Marketing',1);
+INSERT INTO qemp VALUES (3,'Andrew',25000,'Marketing',2);
+INSERT INTO qemp VALUES (4,'Clare',22000,'Marketing',2);
+INSERT INTO qemp VALUES (5,'Todd',38000,'Accounting',1);
+INSERT INTO qemp VALUES (6,'Nancy',22000,'Accounting',5);
+INSERT INTO qemp VALUES (7,'Brier',43000,'Purchasing',1);
+INSERT INTO qemp VALUES (8,'Sarah',56000,'Purchasing',7);
+INSERT INTO qemp VALUES (9,'Sophie',35000,'Personnel',1);
+INSERT INTO qemp VALUES (10,'Sanjay',15000,'Navigation',3);
+INSERT INTO qemp VALUES (11,'Rita',15000,'Books',4);
+INSERT INTO qemp VALUES (12,'Gigi',16000,'Clothes',4);
+INSERT INTO qemp VALUES (13,'Maggie',16000,'Clothes',4);
+INSERT INTO qemp VALUES (14,'Paul',11000,'Equipment',3);
+INSERT INTO qemp VALUES (15,'James',15000,'Equipment',3);
+INSERT INTO qemp VALUES (16,'Pat',15000,'Furniture',3);
+INSERT INTO qemp VALUES (17,'Mark',15000,'Recreation',3);
+
+/* Department table: qdept */
+INSERT INTO qdept VALUES ('Management',5,34,1);
+INSERT INTO qdept VALUES ('Books',1,81,4);
+INSERT INTO qdept VALUES ('Clothes',2,24,4);
+INSERT INTO qdept VALUES ('Equipment',3,57,3);
+INSERT INTO qdept VALUES ('Furniture',4,14,3);
+INSERT INTO qdept VALUES ('Navigation',1,41,3);
+INSERT INTO qdept VALUES ('Recreation',2,29,4);
+INSERT INTO qdept VALUES ('Accounting',5,35,5);
+INSERT INTO qdept VALUES ('Purchasing',5,36,7);
+INSERT INTO qdept VALUES ('Personnel',5,37,9);
+INSERT INTO qdept VALUES ('Marketing',5,38,2);
+
+/* Sale table: qsale */
+INSERT INTO qsale VALUES (1001,2,'Boots - snakeproof','Clothes');
+INSERT INTO qsale VALUES (1002,1,'Pith helmet','Clothes');
+INSERT INTO qsale VALUES (1003,1,'Sextant','Navigation');
+INSERT INTO qsale VALUES (1004,3,'Hat - polar explorer','Clothes');
+INSERT INTO qsale VALUES (1005,5,'Pith helmet','Equipment');
+INSERT INTO qsale VALUES (1006,1,'Pocket knife - Nile','Clothes');
+INSERT INTO qsale VALUES (1007,1,'Pocket knife - Nile','Recreation');
+INSERT INTO qsale VALUES (1008,1,'Compass','Navigation');
+INSERT INTO qsale VALUES (1009,1,'Geo positioning system','Navigation');
+INSERT INTO qsale VALUES (1010,5,'Map measure','Navigation');
+INSERT INTO qsale VALUES (1011,1,'Geo positioning system','Books');
+INSERT INTO qsale VALUES (1012,1,'Sextant','Books');
+INSERT INTO qsale VALUES (1013,3,'Pocket knife - Nile','Books');
+INSERT INTO qsale VALUES (1014,1,'Pocket knife - Nile','Navigation');
+INSERT INTO qsale VALUES (1015,1,'Pocket knife - Nile','Equipment');
+INSERT INTO qsale VALUES (1016,1,'Sextant','Clothes');
+INSERT INTO qsale VALUES (1017,1,'Sextant','Equipment');
+INSERT INTO qsale VALUES (1018,1,'Sextant','Recreation');
+INSERT INTO qsale VALUES (1019,1,'Sextant','Furniture');
+INSERT INTO qsale VALUES (1020,1,'Pocket knife - Nile','Furniture');
+INSERT INTO qsale VALUES (1021,1,'Exploring in 10 Easy Lessons','Books');
+INSERT INTO qsale VALUES (1022,1,'How to Win Foreign Friends','Books');
+INSERT INTO qsale VALUES (1023,1,'Compass','Books');
+INSERT INTO qsale VALUES (1024,1,'Pith helmet','Books');
+INSERT INTO qsale VALUES (1025,1,'Elephant polo stick','Recreation');
+INSERT INTO qsale VALUES (1026,1,'Camel saddle','Recreation');
+
+/* Supplier table: qspl */
+INSERT INTO qspl VALUES (101,'Global Books and Maps');
+INSERT INTO qspl VALUES (102,'Nepalese Corp.');
+INSERT INTO qspl VALUES (103,'All Sports Manufacturing');
+INSERT INTO qspl VALUES (104,'Sweatshops Unlimited');
+INSERT INTO qspl VALUES (105,'All Points_ Inc.');
+INSERT INTO qspl VALUES (106,'Sao Paulo Manufacturing');
+
+/* Delivery table: qdel */
+INSERT INTO qdel VALUES (51,50,'Pocket knife - Nile','Navigation',105);
+INSERT INTO qdel VALUES (52,10,'Pocket knife - Nile','Books',105);
+INSERT INTO qdel VALUES (53,10,'Pocket knife - Nile','Clothes',105);
+INSERT INTO qdel VALUES (54,10,'Pocket knife - Nile','Equipment',105);
+INSERT INTO qdel VALUES (55,10,'Pocket knife - Nile','Furniture',105);
+INSERT INTO qdel VALUES (56,10,'Pocket knife - Nile','Recreation',105);
+INSERT INTO qdel VALUES (57,50,'Compass','Navigation',101);
+INSERT INTO qdel VALUES (58,10,'Geo positioning system','Navigation',101);
+INSERT INTO qdel VALUES (59,10,'Map measure','Navigation',101);
+INSERT INTO qdel VALUES (60,25,'Map case','Navigation',101);
+INSERT INTO qdel VALUES (61,2,'Sextant','Navigation',101);
+INSERT INTO qdel VALUES (62,1,'Sextant','Equipment',105);
+INSERT INTO qdel VALUES (63,20,'Compass','Equipment',103);
+INSERT INTO qdel VALUES (64,1,'Geo positioning system','Books',103);
+INSERT INTO qdel VALUES (65,15,'Map measure','Navigation',103);
+INSERT INTO qdel VALUES (66,1,'Sextant','Books',103);
+INSERT INTO qdel VALUES (67,5,'Sextant','Recreation',102);
+INSERT INTO qdel VALUES (68,3,'Sextant','Navigation',104);
+INSERT INTO qdel VALUES (69,5,'Boots - snakeproof','Clothes',105);
+INSERT INTO qdel VALUES (70,15,'Pith helmet','Clothes',105);
+INSERT INTO qdel VALUES (71,1,'Pith helmet','Clothes',101);
+INSERT INTO qdel VALUES (72,1,'Pith helmet','Clothes',102);
+INSERT INTO qdel VALUES (73,1,'Pith helmet','Clothes',103);
+INSERT INTO qdel VALUES (74,1,'Pith helmet','Clothes',104);
+INSERT INTO qdel VALUES (75,5,'Pith helmet','Navigation',105);
+INSERT INTO qdel VALUES (76,5,'Pith helmet','Books',105);
+INSERT INTO qdel VALUES (77,5,'Pith helmet','Equipment',105);
+INSERT INTO qdel VALUES (78,5,'Pith helmet','Furniture',105);
+INSERT INTO qdel VALUES (79,5,'Pith helmet','Recreation',105);
+INSERT INTO qdel VALUES (80,10,'Pocket knife - Nile','Navigation',102);
+INSERT INTO qdel VALUES (81,1,'Compass','Navigation',102);
+INSERT INTO qdel VALUES (82,1,'Geo positioning system','Navigation',102);
+INSERT INTO qdel VALUES (83,10,'Map measure','Navigation',102);
+INSERT INTO qdel VALUES (84,5,'Map case','Navigation',102);
+INSERT INTO qdel VALUES (85,5,'Compass','Books',102);
+INSERT INTO qdel VALUES (86,5,'Pocket knife - Avon','Recreation',102);
+INSERT INTO qdel VALUES (87,5,'Tent - 2 person','Recreation',102);
+INSERT INTO qdel VALUES (88,2,'Tent - 8 person','Recreation',102);
+INSERT INTO qdel VALUES (89,5,'Exploring in 10 Easy Lessons','Navigation',102);
+INSERT INTO qdel VALUES (90,5,'How to Win Foreign Friends','Navigation',102);
+INSERT INTO qdel VALUES (91,10,'Exploring in 10 Easy Lessons','Books',102);
+INSERT INTO qdel VALUES (92,10,'How to Win Foreign Friends','Books',102);
+INSERT INTO qdel VALUES (93,2,'Exploring in 10 Easy Lessons','Recreation',102);
+INSERT INTO qdel VALUES (94,2,'How to Win Foreign Friends','Recreation',102);
+INSERT INTO qdel VALUES (95,5,'Compass','Equipment',105);
+INSERT INTO qdel VALUES (96,2,'Boots - snakeproof','Equipment',105);
+INSERT INTO qdel VALUES (97,20,'Pith helmet','Equipment',106);
+INSERT INTO qdel VALUES (98,20,'Pocket knife - Nile','Equipment',106);
+INSERT INTO qdel VALUES (99,1,'Sextant','Equipment',106);
+INSERT INTO qdel VALUES (100,3,'Hat - polar explorer','Clothes',105);
+INSERT INTO qdel VALUES (101,3,'Stetson','Clothes',105);
+
+COMMIT;

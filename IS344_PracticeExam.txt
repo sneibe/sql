@@ -1,0 +1,16 @@
+—-The Hunting Moon Pow Wow is scheduled for October 19-21, 2012 in Milwaukee. Do we have any American Indians employed here that might want to attend? Give me a list of all American Indian employees and their birthdates. Leave the birthdates in the default Oracle format: DD-MON-YYYY. List the youngest employee first. 
+
+
+—-What are the unique family names in our database except for Brown, Jones and Smith-I already know we have those names? Sort appropriately.
+
+—-Give me a list of all students who are not Caucasian and were born before 1985. Provide names and ethnicities. Sort by ethnicity first and then by last name and then by first name.
+
+--What's Tim's last name…not John Johnson's twin brother, the other Tim. All I remember about his last name is that it has two "ss" in it somewhere. I also don't remember if we stored his first name as "Tim" or "Timothy."
+
+—-This scholarship is for Asian or Caucasian females. Do we have any students who qualify? Provide names and ethnicities. Sort first by last name and then by first name.
+
+--What's the birthdate of the Susan Smith that we added to the database on 4/15/2012? Provide her name and birthdate. Format the birthdate like 9/25/2012.
+
+--Margaret King (born 2/16/1980) got married and changed her family name to "Nguyen." Please change her family name in the database.
+
+--John Johnson (born 2/28/1985) built up his own company enough that he was able to leave our company. Please remove him from our database.

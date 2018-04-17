@@ -1,0 +1,33 @@
+DROP TABLE employee
+CASCADE CONSTRAINTS;
+
+DROP TABLE prject
+CASCADE CONSTRAINTS;
+
+DROP TABLE projectassign
+CASCADE CONSTRAINTS;
+
+CREATE TABLE employee (
+empid NUMBER (5), 
+fname VARCHAR2 (35) NOT NULL,
+lname VARCHAR2(35) NOT NULL,
+CONSTRAINT employee_empid_pk PRIMARY KEY (empid));
+
+CREATE TABLE prject (
+projectid NUMBER (5),
+projectname VARCHAR (25) NOT NULL,
+projectsponser VARCHAR (25) NOT NULL,
+budget NUMBER (9) NOT NULL,
+startdate DATE NOT NULL,
+CONSTRAINT prject_projectid_pk PRIMARY KEY (projectid));
+
+CREATE TABLE projectassign (
+empid NUMBER (5),
+managerid NUMBER (5) NOT NULL,
+projectid NUMBER (5) NOT NULL,
+assignrole VARCHAR2 (25) NOT NULL,
+assignstart DATE NOT NULL,
+CONSTRAINT projectassign_empid1_pk PRIMARY KEY (empid,managerid,projectid),
+CONSTRAINT projectassign_empid_fk FOREIGN KEY (empid) REFERENCES employee (empid),
+CONSTRAINT projectassign_managerid_fk FOREIGN KEY (managerid) REFERENCES employee (empid),
+CONSTRAINT projectassign_projectidid_fk FOREIGN KEY (projectid) REFERENCES prject (projectid));

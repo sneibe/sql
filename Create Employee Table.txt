@@ -1,0 +1,29 @@
+DROP TABLE employee
+CASCADE CONSTRAINTS;
+
+CREATE TABLE Employee (
+employee_id		NUMBER(5),	
+last_name		VARCHAR2(35) NOT NULL,
+first_name		VARCHAR2(35) NOT NULL,
+street			VARCHAR2(35) NOT NULL,
+city			VARCHAR2(35) NOT NULL,
+state			CHAR(2) DEFAULT 'WI' NOT NULL,
+zip			NUMBER(10) NOT NULL,
+phone			NUMBER(12),
+dob			DATE NOT NULL,
+gender			CHAR(1),
+CONSTRAINT employee_employee_id_pk PRIMARY KEY (employee_id)
+CONSTRAINT gender_cc CHECK (gender IN ('M', 'F', 'O')));
+
+
+
+
+
+Note:
+I included DOB because it is in bold text, meaning that it is a required value.
+I however did not want to include it in the table because you had 
+mentioned in class that we should not create a table that includes
+the first name, last name, and DOB for security reasons.
+
+
+cascade constraint- drop all of the names associated witht the table name

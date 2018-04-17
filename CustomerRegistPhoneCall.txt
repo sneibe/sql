@@ -1,0 +1,31 @@
+
+DROP TABLE customer
+CASCADE CONSTRAINTS;
+DROP TABLE regist
+CASCADE CONSTRAINTS;
+DROP TABLE pcall
+CASCADE CONSTRAINTS;
+
+CREATE TABLE customer (
+customerphone NUMBER (15),
+fname VARCHAR2 (35) NOT NULL,
+lname VARCHAR2 (35) NOT NULL,
+CONSTRAINT customer_customerid_pk PRIMARY KEY (customerphone));
+
+CREATE TABLE pcall (
+callid NUMBER (5),
+callednumber VARCHAR2 (15) NOT NULL,
+startime DATE NOT NULL,
+endtime DATE NOT NULL,
+customerphone NUMBER (15) NOT NULL,
+CONSTRAINT pcall_callid_pk PRIMARY KEY (callid),
+CONSTRAINT pcall_customerphone_fk FOREIGN KEY (customerphone) references customer (customerphone));
+
+
+CREATE TABLE regist (
+customerphone NUMBER (15) NOT NULL,
+friendid NUMBER (15) NOT NULL,
+regisdate DATE NOT NULL,
+CONSTRAINT reqist_customerphone_pk PRIMARY KEY (customerphone,friendid),
+CONSTRAINT regist_customerphone_fk FOREIGN KEY (customerphone) REFERENCES customer (customerphone),
+CONSTRAINT regist_customerphone1_fk FOREIGN KEY (friendid) REFERENCES customer (customerphone));

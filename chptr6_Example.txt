@@ -1,0 +1,153 @@
+/* Chapter 6 */
+
+/* DROP STATEMENTS */
+
+DROP TABLE dept CASCADE CONSTRAINTS;
+DROP TABLE emp CASCADE CONSTRAINTS;
+DROP TABLE monarch CASCADE CONSTRAINTS;
+DROP TABLE product CASCADE CONSTRAINTS;
+DROP TABLE assembly CASCADE CONSTRAINTS;
+
+/* CREATE STATEMENTS */
+
+/* dept */
+CREATE TABLE dept 
+(deptname VARCHAR2(15) NOT NULL,
+deptfloor NUMBER NOT NULL,
+deptphone NUMBER NOT NULL,
+empno NUMBER NOT NULL,
+CONSTRAINT dept_deptname_pk PRIMARY KEY(deptname)) ;
+
+/* emp */
+CREATE TABLE emp
+(empno NUMBER NOT NULL,
+empfname VARCHAR2(10),
+empsalary NUMBER(7,0),
+deptname VARCHAR2(15),
+bossno NUMBER,
+CONSTRAINT emp_empno_pk PRIMARY KEY(empno),
+CONSTRAINT emp_deptname_fk FOREIGN KEY (deptname) REFERENCES dept(deptname),
+CONSTRAINT emp_bossno_fk FOREIGN KEY (bossno) REFERENCES emp(empno));
+
+/* monarch */
+CREATE TABLE monarch (
+  montype	VARCHAR2(5) NOT NULL,
+  monname	VARCHAR2(15),
+  monnum	VARCHAR2(5),
+  rgnbeg	DATE,
+  premonname	VARCHAR2(15),
+  premonnum	VARCHAR2(5),
+CONSTRAINT mon_monname_num_pk PRIMARY KEY(monname,monnum),
+CONSTRAINT mon_prev_mon_fk FOREIGN KEY (premonname, premonnum) 
+REFERENCES monarch (monname, monnum));
+
+/* product */
+CREATE TABLE product
+(prodid NUMBER NOT NULL,
+proddesc VARCHAR2(30),
+prodcost NUMBER(9,2),
+prodprice NUMBER(9,2),
+CONSTRAINT product_prodid_pk PRIMARY KEY(prodid));
+
+/* assembly */
+CREATE TABLE assembly
+(quantity NUMBER NOT NULL,
+prodid NUMBER NOT NULL,
+subprodid NUMBER NOT NULL,
+CONSTRAINT assembly_prod_sub_pk PRIMARY KEY(prodid, subprodid),
+CONSTRAINT assembly_prodid_fk FOREIGN KEY(prodid) REFERENCES product(prodid),
+CONSTRAINT assembly_subprodid_fk FOREIGN KEY(subprodid) REFERENCES product(prodid));
+
+/* INSERT STATEMENTS */
+
+/* dept */
+INSERT INTO dept VALUES ('Management',5,2001,1);
+INSERT INTO dept VALUES ('Marketing',1,2002,2);
+INSERT INTO dept VALUES ('Accounting',4,2003,5);
+INSERT INTO dept VALUES ('Purchasing',4,2004,7);
+INSERT INTO dept VALUES ('Personnel',1,2005,9);
+
+/* emp */
+INSERT INTO emp (empno, empfname, empsalary, deptname) VALUES (1,'Alice',75000,'Management');
+INSERT INTO emp VALUES (2,'Ned',45000,'Marketing',1);
+INSERT INTO emp VALUES (3,'Andrew',25000,'Marketing',2);
+INSERT INTO emp VALUES (4,'Clare',22000,'Marketing',2);
+INSERT INTO emp VALUES (5,'Todd',38000,'Accounting',1);
+INSERT INTO emp VALUES (6,'Nancy',22000,'Accounting',5);
+INSERT INTO emp VALUES (7,'Brier',43000,'Purchasing',1);
+INSERT INTO emp VALUES (8,'Sarah',56000,'Purchasing',7);
+INSERT INTO emp VALUES (9,'Sophie',35000,'Personnel',1);
+
+/* monarch */
+INSERT INTO monarch (montype,monname, monnum,rgnbeg) VALUES ('King','William','IV', TO_DATE ('1830-06-26', 'YYYY-MM-DD'));
+INSERT INTO monarch VALUES ('Queen','Victoria','I', TO_DATE('1837-06-20', 'YYYY-MM-DD'),'William','IV');
+INSERT INTO monarch VALUES ('King','Edward','VII', TO_DATE('1901-01-22', 'YYYY-MM-DD'),'Victoria','I');
+INSERT INTO monarch VALUES ('King','George','V',TO_DATE('1910-05-06', 'YYYY-MM-DD'),'Edward','VII');
+INSERT INTO monarch VALUES ('King','Edward','VIII',TO_DATE('1936-01-20', 'YYYY-MM-DD'),'George','V');
+INSERT INTO monarch VALUES ('King','George','VI',TO_DATE('1936-12-11', 'YYYY-MM-DD'),'Edward','VIII');
+INSERT INTO monarch VALUES ('Queen','Elizabeth','II',TO_DATE('1952-02-06', 'YYYY-MM-DD'),'George','VI');
+
+/* product */
+INSERT INTO product (prodid, proddesc, prodprice) VALUES (1000,'Animal photography kit',725);
+INSERT INTO product VALUES (101,'35mm camera',150,300);
+INSERT INTO product VALUES (102,'Camera case',10,15);
+INSERT INTO product VALUES (103,'70-210 zoom lens',125,200);
+INSERT INTO product VALUES (104,'28-85 zoom lens',115,185);
+INSERT INTO product VALUES (105,'Photographers vest',25,40);
+INSERT INTO product VALUES (106,'Lens cleaning cloth',1,1);
+INSERT INTO product VALUES (107,'Tripod',35,45);
+INSERT INTO product VALUES (108,'24/100 ASA 35mm color neg film',0.85,1);
+
+/* assembly */
+INSERT INTO assembly VALUES (1,1000,101);
+INSERT INTO assembly VALUES (1,1000,102);
+INSERT INTO assembly VALUES (1,1000,103);
+INSERT INTO assembly VALUES (1,1000,104);
+INSERT INTO assembly VALUES (1,1000,105);
+INSERT INTO assembly VALUES (2,1000,106);
+INSERT INTO assembly VALUES (1,1000,107);
+INSERT INTO assembly VALUES (10,1000,108);
+
+COMMIT;
+
+--List the product identifier of each component(subproduct) of the animal photography kit.
+SELECT subprodid from assembly,product
+WHERE product.prodid = assembly.prodid
+AND proddesc= 'Animal photography kit';
+
+--List the product description and cost of each component of the animal photography kit.
+SELECT proddesc,prodcost FROM product
+WHERE prodid IN (SELECT subprodid FROM assembly,product 
+WHERE proddesc= 'Animal photography kit'
+AND product.prodid = assembly.prodid);
+
+--Of which single component from the Animal Photography Kit do we need the most 
+--(list just one item description unless two items require the same quantity).
+SELECT proddesc FROM product
+WHERE prodid = (SELECT subprodid from assembly,product
+WHERE product.prodid = assembly.prodid
+AND proddesc= 'Animal photography kit'
+AND quantity = (SELECT MAX (quantity) FROM assembly));
+
+--What’s the total # of parts needed for the Animal photography kit?
+SELECT SUM(quantity) As "Total Quantity" FROM product,assembly 
+WHERE product.prodid = assembly.prodid
+AND proddesc = 'Animal photography kit';
+
+--Provide also the name of the main product with a corresponding heading
+SELECT SUM(quantity) As "Total Quantity", product.proddesc AS "Product" FROM product,assembly 
+WHERE product.prodid = assembly.prodid
+AND proddesc = 'Animal photography kit'
+GROUP BY product.proddesc;
+
+--What’s the total price of the Animal Photography Kit if you purchased all the parts separately ? 
+SELECT TO_CHAR(SUM(quantity*prodprice), '$999.00') AS "Total" FROM product,assembly
+WHERE product.prodid = assembly.subprodid
+AND product.prodid IN (SELECT subprodid from assembly,product
+WHERE proddesc= 'Animal photography kit'
+AND product.prodid = assembly.prodid);
+
+
+
+
+

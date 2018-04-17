@@ -1,0 +1,127 @@
+--Nation and Stock tables are below
+--This code creates the nation table with the primary key constraint being the nation code (natcode)
+
+CREATE TABLE nation (
+  	natcode   VARCHAR2(3) NOT NULL,
+  	natname   VARCHAR2(35) NOT NULL,
+  	exchrate  NUMBER (9,5) NOT NULL,
+   	 CONSTRAINT nationcode_id_pk PRIMARY KEY(natcode));
+
+-- This code creates the stock table with the primary key constraint being stock code (stkcode)
+-- The foreign key constraint being nation code from the nation table
+
+CREATE TABLE stock( 
+  	stkcode   VARCHAR2(3) NOT NULL,
+  	stkfrim   VARCHAR2(35) NOT NULL,
+  	stkprice  NUMBER(6,2) NOT NULL,
+  	stkqty    NUMBER (9) NOT NULL,
+  	stkdiv    NUMBER (5,2) NOT NULL,
+  	stkper    NUMBER (5) NOT NULL,
+  	natcode   VARCHAR2 (3) NOT NULL,
+   	 CONSTRAINT stkcode_id_pk PRIMARY KEY (stkcode),
+    	CONSTRAINT stkcode_natcode_fk FOREIGN KEY (natcode) REFERENCES nation (natcode)); 
+	
+
+--This code creates the department table with the primary key constraint being department ID (dept_id)
+CREATE TABLE department (
+  dept_id   NUMBER (5) NOT NULL,
+  dept_name VARCHAR2 (35) NOT NULL,
+  dept_phone NUMBER (10) NOT NULL,
+  CONSTRAINT dept_id_Pk PRIMARY KEY (dept_id));
+
+--This code creates the table for employee with the primary key being employee ID (emp_id)
+--The foreign key constraint would be dept_id from the department table
+
+CREATE TABLE employee (
+	emp_id  NUMBER(5) NOT NULL,
+	emp_fn  VARCHAR2(35)NOT NULL,
+	emp_ln  VARCHAR2 (35) NOT NULL,
+	emp_phone NUMBER (10) NOT NULL,
+	emp_gend CHAR (1),
+	dept_id   NUMBER(5) NOT NULL,
+
+CONSTRAINT emp_id_Pk PRIMARY KEY (emp_id),
+CONSTRAINT emp_id_dept_id_fk FOREIGN KEY (dept_id) REFERENCES department (dept_id),
+CONSTRAINT empgender1_cc CHECK ((emp_gend = 'M') or (emp_gend = 'F') or (emp_gend = 'O')));
+
+--This code creates the table for address with the primary key being address id (addr_id)
+--Foreign key constraint in the address table is emp_id from employee table
+-- Default state is Wisconsin (WI)
+
+CREATE TABLE address (
+	addr_id  NUMBER(5) NOT NULL,
+	addrstrt VARCHAR2 (35) NOT NULL,
+	city     VARCHAR2 (35) NOT NULL,
+	addrst   CHAR (2) DEFAULT 'WI' NOT NULL,
+	zipcode  NUMBER (10) NOT NULL,
+	emp_id   Number (5) NOT NULL,
+	CONSTRAINT addr_id_pk PRIMARY KEY (addr_id),
+	CONSTRAINT addr_idemp_id_fk FOREIGN KEY (emp_id) REFERENCES employee (emp_id));
+
+-- This code creates the store1 table with the primary constraint being store code (strcode)
+
+CREATE TABLE Store1 (
+	strcode   NUMBER (3) NOT NULL,
+	strname   VARCHAR2 (35) NOT NULL,
+	straddr   VARCHAR2 (35) NOT NULL,
+CONSTRAINT strcode_pk PRIMARY KEY (strcode));
+
+--This code creates the store department table with primaray constraint being dept_name
+--another primary key and foreign key constraint is store code
+
+CREATE TABLE DepartmentStore (
+  stdept_name   VARCHAR2(35) NOT NULL,
+  strcode        NUMBER (3) NOT NULL,
+  stdept_phone  NUMBER (10) NOT NULL,
+  CONSTRAINT stdept_name_Pk PRIMARY KEY (stdept_name,strcode),
+  CONSTRAINT strcode_fk FOREIGN KEY (strcode) REFERENCES store1 (strcode));
+
+—This code creates a sequence 
+
+CREATE SEQUENCE store1
+START WITH 100
+INCREMENT BY 1
+NOCACHE; 
+
+
+—- This code inserts into store1 table and departmentstore 
+INSERT INTO store1
+(strcode,strname,straddr) 
+VALUES(strcode_seq.NEXTVAL,'Mega East','1201 S Hastings Way');
+
+INSERT INTO store1
+(strcode,strname,straddr)
+VALUES(strcode_seq.NEXTVAL, 'Mega West', '2615 N Clairemont Avenue');
+
+INSERT INTO departmentstore
+(strcode,stdept_name,stdept_phone)
+VALUES(101,'Produce','7151231234');
+
+INSERT INTO departmentstore
+(strcode,stdept_name, stdept_phone)
+VALUES(101,'Dairy','7151231235');
+
+INSERT INTO departmentstore
+(strcode,stdept_name, stdept_phone)
+VALUES(102,'Dairy','7151231237');
+
+INSERT INTO departmentstore
+(strcode,stdept_name, stdept_phone)
+VALUES(102,'Meat','7151231236');
+
+— This selects items using INNER JOIN & EQUIJOIN
+SELECT * FROM sale INNER JOIN lineitem
+USING (saleno);
+
+— This is an EQUIJOIN
+
+SELECT * FROM sale, lineitem 
+    WHERE sale.saleno = lineitem.SALENO; 
+
+— The code below shows a left join
+SELECT * FROM item LEFT JOIN lineitem USING (itemno);
+
+SELECT * FROM sale LEFT JOIN lineitem USING (saleno);
+
+
+

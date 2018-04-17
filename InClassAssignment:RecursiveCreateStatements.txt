@@ -1,0 +1,28 @@
+DROP TABLE softwareprogram
+CASCADE CONSTRAINTS;
+DROP TABLE prereq
+CASCADE CONSTRAINTS;
+DROP TABLE module
+CASCADE CONSTRAINTS;
+
+CREATE TABLE softwareprogram (
+sprogramid NUMBER (5),
+sprogramname VARCHAR2 (35) NOT NULL,
+CONSTRAINT softwareprogram_sprogramid_pk PRIMARY KEY (sprogramid));
+
+CREATE TABLE module (
+moduleid NUMBER (5),
+modulename VARCHAR2 (35) NOT NULL,
+approxlength NUMBER (3) NOT NULL,
+sprogramid NUMBER (5) NOT NULL,
+CONSTRAINT module_moduleid_pk PRIMARY KEY (moduleid),
+CONSTRAINT module_sprogramid_fk FOREIGN KEY (sprogramid) REFERENCES softwareprogram (sprogramid));
+
+CREATE TABLE prereq (
+prereqid NUMBER (5) NOT NULL,
+moduleid NUMBER (5) NOT NULL,
+CONSTRAINT prereq_prereqid1_pk PRIMARY KEY (prereqid,moduleid),
+CONSTRAINT prereq_prereqid_fk FOREIGN KEY (prereqid) REFERENCES module (moduleid),
+CONSTRAINT prereq_moduleid1_fk FOREIGN KEY (moduleid) REFERENCES module (moduleid));
+
+

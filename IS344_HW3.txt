@@ -1,0 +1,892 @@
+--Stacey Ibe
+--Individual Homework 3
+--Dr. Jean Pratt
+--April 18,2018
+
+DROP TABLE person
+    CASCADE CONSTRAINTS; 
+    
+DROP TABLE addr
+    CASCADE CONSTRAINTS;
+    
+DROP TABLE phone
+    CASCADE CONSTRAINTS; 
+
+DROP TABLE creditcard
+ CASCADE CONSTRAINTS;
+ 
+DROP TABLE donation
+    CASCADE CONSTRAINTS; 
+    
+DROP TABLE volunteer 
+    CASCADE CONSTRAINTS;
+    
+DROP TABLE emergencycontact
+    CASCADE CONSTRAINTS;
+    
+--This table is a M:M
+DROP TABLE phoneperson
+    CASCADE CONSTRAINTS;
+
+DROP TABLE schedule 
+    CASCADE CONSTRAINTS;
+    
+--This table is a M:M
+DROP TABLE personaddr
+    CASCADE CONSTRAINTS;
+    
+--The code below drops sequences for the ID's for each table
+DROP SEQUENCE seqpersonid;
+
+DROP SEQUENCE seqaddrid;
+
+DROP SEQUENCE seqphoneid;
+
+DROP SEQUENCE seqdonationid;
+
+DROP SEQUENCE seqscheduleid;
+
+
+--Create Sequences for PersonID, addrID,phoneID,donationID
+CREATE SEQUENCE seqpersonid
+START WITH 1
+INCREMENT BY 1;
+
+CREATE SEQUENCE seqaddrid
+START WITH 1
+INCREMENT BY 1;
+
+CREATE SEQUENCE seqphoneid
+START WITH 1
+INCREMENT BY 1;
+
+CREATE SEQUENCE seqdonationid
+START WITH 1
+INCREMENT BY 1; 
+
+CREATE SEQUENCE seqscheduleid
+START WITH 1
+INCREMENT BY 1;
+
+
+--The code below creates the  PERSON table 
+CREATE TABLE person (
+personid NUMBER (5) NOT NULL,
+fname    VARCHAR2 (35) NOT NULL,
+lname 	 VARCHAR2 (35) NOT NULL,
+CONSTRAINT person_personid_pk PRIMARY KEY (personid));
+
+--The code below creates the Volunteer Table
+CREATE TABLE volunteer (
+personid NUMBER (5) NOT NULL,
+startdate DATE NOT NULL,
+CONSTRAINT volunteer_personid_pk PRIMARY KEY (personid),
+CONSTRAINT volunteer_personid_fk FOREIGN KEY (personid) REFERENCES person (personid));
+
+--The code below creates ADDR table. Addrtype indicates if the address is the persons PRIMARY address. If it is, then "Y", if not, then "NO"
+CREATE TABLE addr (
+addrid NUMBER (5) NOT NULL, 
+addstrt VARCHAR2 (35) NOT NULL,
+city VARCHAR2 (35) NOT NULL,
+ste CHAR (2) DEFAULT 'WI' NOT NULL,
+zipcode VARCHAR2 (10) NOT NULL,
+CONSTRAINT addr_addrid_pk PRIMARY KEY(addrid));
+
+--The code below creates the table for personaddr. Where P=Primary Address and S=Secondary Address
+CREATE TABLE personaddr (
+addrid NUMBER (5) NOT NULL, 
+personid NUMBER (5) NOT NULL,
+addrtype CHAR (1) NOT NULL,
+CONSTRAINT addr_addrtype_cc CHECK ((addrtype= 'P') OR  (addrtype= 'S')),
+CONSTRAINT personaddr_peraddr_pk PRIMARY KEY (addrid,personid),
+CONSTRAINT personaddr_personid_fk FOREIGN KEY (personid) REFERENCES person (personid),
+CONSTRAINT personaddr_addrid_fk FOREIGN KEY (addrid) REFERENCES addr (addrid));
+
+
+--The code creates the PHONE table. Where  M = Mobile H=Home W=Work
+CREATE TABLE phone (
+phoneid NUMBER (5) NOT NULL,
+pnumber VARCHAR2 (10) NOT NULL,
+ptype CHAR (1) NOT NULL,
+personid NUMBER (5) NOT NULL,
+CONSTRAINT phone_ptype_cc CHECK ((ptype='M') OR (ptype='H') OR (ptype = 'W')),
+CONSTRAINT phone_phoneid_pk PRIMARY KEY (phoneid));
+
+--The code below creates the phoneperson table. Prim check means if the phone is the primary number for the person
+--if not it be with "N". N= NO, Y=YES
+CREATE TABLE phoneperson (
+personid NUMBER (5) NOT NULL,
+phoneid NUMBER (5) NOT NULL,
+prim CHAR (1) NOT NULL,
+CONSTRAINT phoneperson_prim_cc CHECK ((prim= 'Y') OR (prim= 'N')),
+CONSTRAINT phoneperson_personid2_pk PRIMARY KEY (phoneid,personid),
+CONSTRAINT phoneperson_personid5_fk FOREIGN KEY (personid) REFERENCES person (personid),
+CONSTRAINT phoneperson_phoneid_fk FOREIGN KEY (phoneid) REFERENCES phone (phoneid));
+
+--the code below creates table for schedule
+CREATE TABLE schedule (
+scheduleid NUMBER (5) NOT NULL,
+personid NUMBER (5) NOT NULL,
+dte DATE NOT NULL,
+stime DATE NOT NULL,
+etime DATE NOT NULL,
+CONSTRAINT schedule_scheduleid_pk PRIMARY KEY (scheduleid),
+CONSTRAINT schedule_personid_fk FOREIGN KEY (personid) REFERENCES volunteer (personid));
+
+
+--The code below creates the creditcard table. Where the values are V=Visa, M=Mastercard, A=American Express, D=Discover 
+CREATE TABLE creditcard ( 
+cctype CHAR (1) NOT  NULL,
+ccacct VARCHAR2 (16) NOT NULL,
+expdate DATE NOT NULL, 
+personid NUMBER (5) NOT NULL,
+CONSTRAINT creditcard_cctype_cc CHECK ((cctype= 'V') OR (cctype= 'M') OR (cctype= 'A') OR (cctype= 'D')),
+CONSTRAINT creditcard_personid1_pk PRIMARY KEY (personid),
+CONSTRAINT creditcard_personid_fk FOREIGN KEY (personid) REFERENCES person (personid));
+
+--The code below creates the donation table     
+CREATE TABLE donation (
+donationid NUMBER (5) NOT NULL,
+amnt NUMBER (9) NOT NULL,
+dondate DATE NOT NULL, 
+personid NUMBER (5) NOT NULL,
+CONSTRAINT donation_donationid_pk PRIMARY KEY (donationid),
+CONSTRAINT donation_personid_fk FOREIGN KEY (personid) REFERENCES person (personid));
+
+--The code below creates the Emergency Contact Table 
+CREATE TABLE emergencycontact (
+personid NUMBER (5),
+emcontact NUMBER (5),
+rlshp VARCHAR2 (35) NOT NULL,
+CONSTRAINT emergencycontact_personid_pk PRIMARY KEY (personid,emcontact),
+CONSTRAINT emergencycontact_person1_fk FOREIGN KEY (personid) REFERENCES person (personid),
+CONSTRAINT emergencycontact_emcontact_fk FOREIGN KEY (emcontact) REFERENCES person (personid));
+
+--The code below inputs values into PERSON table
+INSERT INTO person 
+	VALUES (seqpersonid.NEXTVAL,'Montrell','Johnson');
+INSERT INTO person 
+	VALUES (seqpersonid.NEXTVAL,'Juanita','Bautista');
+INSERT INTO person 
+	VALUES (seqpersonid.NEXTVAL,'Emily','Varner');
+INSERT INTO person 
+	VALUES (seqpersonid.NEXTVAL,'Ashley','Tettamanzi');
+INSERT INTO person 
+	VALUES (seqpersonid.NEXTVAL,'Claire','Magno');
+INSERT INTO person 
+	VALUES (seqpersonid.NEXTVAL,'Nikki','Ibe');
+INSERT INTO person 
+	VALUES (seqpersonid.NEXTVAL,'Stacey','Ibe');
+INSERT INTO person 
+	VALUES (seqpersonid.NEXTVAL,'Brandon','Simonis');
+INSERT INTO person 
+	VALUES (seqpersonid.NEXTVAL,'Jamie','Berger');
+INSERT INTO person 
+	VALUES (seqpersonid.NEXTVAL,'Alison','Von Haden');
+INSERT INTO person 
+	VALUES (seqpersonid.NEXTVAL,'Nora','Johnson');
+INSERT INTO person 
+	VALUES (seqpersonid.NEXTVAL,'Levina','Wang');
+INSERT INTO person 
+	VALUES (seqpersonid.NEXTVAL,'Matthew','Connor');
+INSERT INTO person 
+	VALUES (seqpersonid.NEXTVAL,'Cj','Rylie');
+INSERT INTO person
+	VALUES (seqpersonid.NEXTVAL,'Jose','Salvador Gomez Franco');
+    
+--Everyone past this is an Emergency Contact
+INSERT INTO person 
+	VALUES (seqpersonid.NEXTVAL,'Matt','Jarrett');
+INSERT INTO person 
+	VALUES (seqpersonid.NEXTVAL,'Jack','Marchiavava');
+INSERT INTO person 
+	VALUES (seqpersonid.NEXTVAL,'Shannon','McCoy');
+INSERT INTO person 
+	VALUES (seqpersonid.NEXTVAL,'Gabby','Knauer');
+INSERT INTO person 
+	VALUES (seqpersonid.NEXTVAL,'Sara','Harris');
+INSERT INTO person 
+	VALUES (seqpersonid.NEXTVAL,'Malik','Bowen');
+INSERT INTO person 
+	VALUES (seqpersonid.NEXTVAL,'Rylie','Fourre');
+INSERT INTO person 
+	VALUES (seqpersonid.NEXTVAL,'Frankie','Einberger');
+INSERT INTO person 
+	VALUES (seqpersonid.NEXTVAL,'Sam','Rollay');
+INSERT INTO person 
+	VALUES (seqpersonid.NEXTVAL,'Sheila','Lim');
+INSERT INTO person 
+	VALUES (seqpersonid.NEXTVAL,'Miko','Marc');
+INSERT INTO person 
+	VALUES (seqpersonid.NEXTVAL,'Rachel','Guiterrez');
+INSERT INTO person 
+	VALUES (seqpersonid.NEXTVAL,'Becky','Guiterrez');
+INSERT INTO person 
+	VALUES (seqpersonid.NEXTVAL,'Lance','Vincent');
+INSERT INTO person 
+	VALUES (seqpersonid.NEXTVAL,'Lorna','Milton');
+INSERT INTO person 
+	VALUES (seqpersonid.NEXTVAL,'Ryan','Burr');
+INSERT INTO person 
+	VALUES (seqpersonid.NEXTVAL,'Jacob','Sarosiek');
+INSERT INTO person 
+	VALUES (seqpersonid.NEXTVAL,'Molly','Steve');
+INSERT INTO person 
+	VALUES (seqpersonid.NEXTVAL,'Sue','Petry');
+INSERT INTO person 
+	VALUES (seqpersonid.NEXTVAL,'Sandra','Alunan');
+INSERT INTO person 
+	VALUES (seqpersonid.NEXTVAL,'Alex','Kook');
+INSERT INTO person 
+	VALUES (seqpersonid.NEXTVAL,'Mel','Bell');
+INSERT INTO person 
+	VALUES (seqpersonid.NEXTVAL,'Nicole','Estoya');
+INSERT INTO person 
+	VALUES (seqpersonid.NEXTVAL,'Ben','Quinn');
+
+
+--The table below inserts values into volunteer 
+INSERT INTO volunteer 
+VALUES (2,'04-JAN-2016');
+INSERT INTO volunteer 
+VALUES (3,'26-FEB-2016');
+INSERT INTO volunteer 
+VALUES (4,'22-JAN-2016');
+INSERT INTO volunteer 
+VALUES (5,'06-FEB-2017');
+INSERT INTO volunteer 
+VALUES (6,'20-MAR-2017');
+INSERT INTO volunteer 
+VALUES (7,'08-MAY-2018');
+INSERT INTO volunteer 
+VALUES (8,'18-JAN-2018');
+INSERT INTO volunteer 
+VALUES (9,'12-FEB-2018');
+INSERT INTO volunteer 
+VALUES (10,'11-MAR-2018');
+INSERT INTO volunteer 
+VALUES (11,'13-JUN-2018');
+INSERT INTO volunteer 
+VALUES (12,'13-JUN-2018');
+INSERT INTO volunteer 
+VALUES (13,'28-JUN-2018');
+INSERT INTO volunteer 
+VALUES (16,'09-APR-2018');
+    
+--The code below inputs values into ADDR table. DEFAULT is ‘WI’ 
+INSERT INTO addr
+	VALUES (seqaddrid.NEXTVAL,'6901 Park', 'Eagan', DEFAULT, '54701');
+INSERT INTO addr
+	VALUES (seqaddrid.NEXTVAL,'1234 Main', 'Appleton', DEFAULT, '54915');
+INSERT INTO addr
+	VALUES (seqaddrid.NEXTVAL,'1232 Pop', 'Minneapolis', 'MN', '55423');
+INSERT INTO addr
+	VALUES (seqaddrid.NEXTVAL,'4564 Queen', 'Edina', DEFAULT, '54936-7653');
+INSERT INTO addr
+    VALUES (seqaddrid.NEXTVAL, '6181 Drexel', 'Edina', 'MN', '52540');
+INSERT INTO addr
+	VALUES (seqaddrid.NEXTVAL, '1234 Garfield Ave', 'Eau Claire', DEFAULT, '54701');
+INSERT INTO addr
+	VALUES (seqaddrid.NEXTVAL, '422 Niagara St.', 'Eau Claire', DEFAULT, '54702');
+INSERT INTO addr
+	VALUES (seqaddrid.NEXTVAL, '422 Niagara St.', 'Eau Claire', DEFAULT, '54702');
+INSERT INTO addr
+	VALUES (seqaddrid.NEXTVAL, '341 Water St.', 'Eau Claire', DEFAULT, '54701');
+INSERT INTO addr
+	VALUES (seqaddrid.NEXTVAL, '2836 N Clairemont Ave.', 'Eau Claire', DEFAULT, '54702');
+INSERT INTO addr
+	VALUES (seqaddrid.NEXTVAL, '511 Water St.', 'Eau Claire', DEFAULT, '54701');
+INSERT INTO addr
+	VALUES (seqaddrid.NEXTVAL, '401 Water St.', 'Eau Claire', DEFAULT, '54701');
+INSERT INTO addr
+	VALUES (seqaddrid.NEXTVAL, '6525 Queens Ave', 'St.Paul', DEFAULT, '55423'); 
+INSERT INTO addr
+	VALUES (seqaddrid.NEXTVAL, '411 Grain St.', 'Eau Claire', DEFAULT, '54701');
+INSERT INTO addr
+	VALUES (seqaddrid.NEXTVAL, '675 Seaseme St.', 'Eau Claire', DEFAULT, '54701'); 
+INSERT INTO addr
+	VALUES (seqaddrid.NEXTVAL, '6352 Quinton Ave.', 'Edina', DEFAULT, '55423');
+INSERT INTO addr
+	VALUES (seqaddrid.NEXTVAL, '7382 Sunnyside Rd.', 'Oakfield', DEFAULT, '54270'); 
+INSERT INTO addr
+	VALUES (seqaddrid.NEXTVAL, '481', 'Emerson Dr.', DEFAULT, '54270'); 
+    
+--The code below inputs values into the personaddr table
+INSERT INTO personaddr 
+VALUES (2,2,'P');
+INSERT INTO personaddr 
+VALUES (3,3,'P');
+INSERT INTO personaddr 
+VALUES (4,4,'S');
+INSERT INTO personaddr 
+VALUES (5,5,'P');
+INSERT INTO personaddr 
+VALUES (6,6,'P');
+INSERT INTO personaddr 
+VALUES (7,7,'S');
+INSERT INTO personaddr 
+VALUES (17,7,'P');
+INSERT INTO personaddr 
+VALUES (8,8,'S');
+INSERT INTO personaddr 
+VALUES (18,8,'P');
+INSERT INTO personaddr 
+VALUES (9,9,'P');
+INSERT INTO personaddr 
+VALUES (10,10,'P');
+INSERT INTO personaddr 
+VALUES (11,11,'P');
+INSERT INTO personaddr 
+VALUES (12,12,'P');
+INSERT INTO personaddr 
+VALUES (13,13,'P');
+INSERT INTO personaddr 
+VALUES (14,13,'S');
+INSERT INTO personaddr 
+VALUES (15,14,'P');
+INSERT INTO personaddr 
+VALUES (16,15,'S');
+INSERT INTO personaddr 
+VALUES (16,2,'P');
+INSERT INTO personaddr 
+VALUES (17,16,'P');
+
+--The code below inputs values into the PHONE table. Where M = Mobile, W = Work, H=Home
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'6353334444', 'M',2);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'3241117777', 'M',3);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'7261171199', 'M',4);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'7156421231', 'W',5);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'5436668388', 'M',6); 
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'7658999321', 'W', 7);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'7658999344', 'W', 8);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'7155799321', 'W', 9);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'7768499321', 'W', 10);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'6568499321', 'M', 10);  
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'7657799321', 'H', 11);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'7698699321', 'M', 12);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'7138699321', 'M', 13);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'7157299321', 'M', 14);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'6213518906', 'W', 14);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'7138698421', 'W', 15);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'1234567890', 'H', 3);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'6124561114', 'W', 6);  
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'9876542241', 'M', 9);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'6123894513', 'M', 16);
+
+--Phone numbers for Emergency Contacts
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'7542372480', 'M', 17);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'6515550129', 'H', 17);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'6515550102', 'M', 18);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'4105550181', 'H', 18);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'6125421111', 'M', 19);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'4108975221', 'H', 19);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'9871525179', 'M', 20);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'9431251718', 'H', 20);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'9523416191', 'M', 21);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'7651234567', 'H', 21);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'9871234512', 'M', 22);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'5343219718', 'H', 22);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'2131034444', 'M', 23);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'2453133333', 'H', 23);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'9341667888', 'M', 24);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'5432227712', 'H', 24);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'6642341232', 'H', 25);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'6642123468', 'M', 25);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'7651234567', 'H', 26);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'9871234512', 'M', 26);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'5343219718', 'H', 27);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'2131034444', 'M', 28);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'2453133333', 'H', 28);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'9341667888', 'M',29);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'5432227712', 'H',29);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'6642341232', 'H',30);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'6642123468', 'M',30);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'6457282999', 'H',31);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'5272999917', 'M',31);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'8261118897', 'H',32);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'6173910002', 'M',32);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'6314445557', 'H',33);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'2136667777', 'M',33);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'2459998886', 'H',34);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'9343214211', 'M',34);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'7653321111', 'H',35);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'6782221173', 'H',35);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'4531112134', 'M',36);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'9875134111', 'M',36);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'4216644228', 'H',37);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'8761123555', 'M',37);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'3321114688', 'H',38);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'8712213356', 'M',38);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'5436548888', 'H',39);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'6649863222', 'H',39);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'6643214999', 'M',40);
+INSERT INTO phone
+	VALUES (seqphoneid.NEXTVAL,'5343219718', 'H', 27);
+
+    
+--The code below inputs values into the phoneperson table
+INSERT INTO phoneperson 
+VALUES (2, 2,'Y');
+INSERT INTO phoneperson 
+VALUES (3,3,'Y');
+INSERT INTO phoneperson 
+VALUES (4,4,'Y');
+INSERT INTO phoneperson 
+VALUES (5,5,'Y');
+INSERT INTO phoneperson 
+VALUES (6,6,'Y');
+INSERT INTO phoneperson 
+VALUES (18,6,'N');
+INSERT INTO phoneperson 
+VALUES (7,7,'Y');
+INSERT INTO phoneperson 
+VALUES (8,8,'Y');
+INSERT INTO phoneperson 
+VALUES (9,9,'N');
+INSERT INTO phoneperson 
+VALUES (9,19,'Y');
+INSERT INTO phoneperson 
+VALUES (10,10,'N');
+INSERT INTO phoneperson 
+VALUES (10,11,'Y');
+INSERT INTO phoneperson 
+VALUES (11,12,'Y');
+INSERT INTO phoneperson 
+VALUES (12,13,'Y');
+INSERT INTO phoneperson 
+VALUES (13,14,'Y');
+INSERT INTO phoneperson 
+VALUES (14,15,'Y');
+INSERT INTO phoneperson 
+VALUES (14,16,'N');
+INSERT INTO phoneperson 
+VALUES (15,16,'Y');
+INSERT INTO phoneperson 
+VALUES (3,17,'N');
+INSERT INTO phoneperson 
+VALUES (16,20,'Y');
+
+
+--The values below are for the emergency contacts
+INSERT INTO phoneperson 
+VALUES (17,22,'Y');
+INSERT INTO phoneperson 
+VALUES (17,23,'N');
+INSERT INTO phoneperson 
+VALUES (18,24,'Y');
+INSERT INTO phoneperson 
+VALUES (18,25,'N');
+INSERT INTO phoneperson 
+VALUES (19,26,'Y');
+INSERT INTO phoneperson 
+VALUES (19,27,'N');
+INSERT INTO phoneperson 
+VALUES (20,28,'Y');
+INSERT INTO phoneperson 
+VALUES (20,29,'N');
+INSERT INTO phoneperson 
+VALUES (21,30,'Y');
+INSERT INTO phoneperson 
+VALUES (21,31,'N');
+INSERT INTO phoneperson 
+VALUES (22,32,'Y');
+INSERT INTO phoneperson 
+VALUES (22,33,'N');
+INSERT INTO phoneperson 
+VALUES (23,34,'Y');
+INSERT INTO phoneperson 
+VALUES (23,35,'N');
+INSERT INTO phoneperson 
+VALUES (24,36,'Y');
+INSERT INTO phoneperson 
+VALUES (24,37,'N');
+INSERT INTO phoneperson 
+VALUES (25,38,'Y');
+INSERT INTO phoneperson 
+VALUES (25,39,'N');
+INSERT INTO phoneperson 
+VALUES (26,40,'Y');
+INSERT INTO phoneperson 
+VALUES (26,41,'N');
+INSERT INTO phoneperson 
+VALUES (27,42,'Y');
+INSERT INTO phoneperson 
+VALUES (27,68,'N');
+INSERT INTO phoneperson 
+VALUES (28,43,'Y');
+INSERT INTO phoneperson 
+VALUES (28,44,'N');
+INSERT INTO phoneperson 
+VALUES (29,45,'Y');
+INSERT INTO phoneperson 
+VALUES (29,46,'N');
+INSERT INTO phoneperson 
+VALUES (30,47,'Y');
+INSERT INTO phoneperson 
+VALUES (30,48,'N');
+INSERT INTO phoneperson 
+VALUES (31,49,'Y');
+INSERT INTO phoneperson 
+VALUES (31,50,'N');
+INSERT INTO phoneperson 
+VALUES (32,51,'Y');
+INSERT INTO phoneperson 
+VALUES (32,52,'N');
+INSERT INTO phoneperson 
+VALUES (33,53,'Y');
+INSERT INTO phoneperson 
+VALUES (33,54,'N');
+INSERT INTO phoneperson 
+VALUES (34,55,'Y');
+INSERT INTO phoneperson 
+VALUES (34,56,'N');
+INSERT INTO phoneperson 
+VALUES (35,57,'Y');
+INSERT INTO phoneperson 
+VALUES (35,58,'N');
+INSERT INTO phoneperson 
+VALUES (36,59,'Y');
+INSERT INTO phoneperson 
+VALUES (36,60,'N');
+INSERT INTO phoneperson 
+VALUES (37,61,'Y');
+INSERT INTO phoneperson 
+VALUES (37,62,'N');
+INSERT INTO phoneperson 
+VALUES (38,63,'Y');
+INSERT INTO phoneperson 
+VALUES (38,64,'N');
+INSERT INTO phoneperson 
+VALUES (39,65,'Y');
+INSERT INTO phoneperson 
+VALUES (39,66,'N');
+INSERT INTO phoneperson 
+VALUES (40,67,'Y');
+INSERT INTO phoneperson 
+VALUES (40,18,'N');
+
+--The code below inputs values into the CREDIT CARD table. Where the type values are M= Mastercard A=American Express, V=Visa, D=Discover
+INSERT INTO creditcard
+	VALUES ('M','5591159741581043', TO_DATE('10/2023', 'MM/YYYY'),2);
+INSERT INTO creditcard
+	VALUES ('A','5533757067300541', TO_DATE('03/2019','MM/YYYY'),3);
+INSERT INTO creditcard
+	VALUES ('V','4492304863507714', TO_DATE('08/2020', 'MM/YYYY'),4);
+INSERT INTO creditcard
+	VALUES ('V','4621926059118601', TO_DATE('07/2020','MM/YYYY'),5);
+INSERT INTO creditcard
+	VALUES ('V','4539638478427262', TO_DATE('08/2021', 'MM/YYYY'),6);
+INSERT INTO creditcard
+	VALUES ('D','4532553746393880', TO_DATE('10/2022', 'MM/YYYY'), 7);
+INSERT INTO creditcard
+	VALUES ('A','5533757067342541', TO_DATE('03/2019','MM/YYYY'),8);
+INSERT INTO creditcard
+	VALUES ('V','4492304863787714', TO_DATE('08/2020', 'MM/YYYY'),9);
+INSERT INTO creditcard
+	VALUES ('V','4621926053318601', TO_DATE('07/2020','MM/YYYY'),13);
+INSERT INTO creditcard
+	VALUES ('V','4539458478427262', TO_DATE('08/2021', 'MM/YYYY'),14);
+INSERT INTO creditcard
+	VALUES ('D','5653255374393880', TO_DATE('10/2022', 'MM/YYYY'), 15);
+
+--The code below inputs values into the donation table
+INSERT INTO donation 
+    VALUES (seqdonationid.NEXTVAL,'1080', TO_DATE('10/30/2013', 'MM/DD/YYYY'),2);
+INSERT INTO donation 
+    VALUES (seqdonationid.NEXTVAL,'12120', TO_DATE('08/21/2013', 'MM/DD/YYYY'),3);
+INSERT INTO donation 
+    VALUES (seqdonationid.NEXTVAL,'1120', TO_DATE('10/10/2014', 'MM/DD/YYYY'),4);
+INSERT INTO donation 
+    VALUES (seqdonationid.NEXTVAL,'30000', TO_DATE('04/01/2017', 'MM/DD/YYYY'),5);
+INSERT INTO donation 
+    VALUES (seqdonationid.NEXTVAL,'6020', TO_DATE('03/09/2017', 'MM/DD/YYYY'),6);
+INSERT INTO donation 
+    VALUES (seqdonationid.NEXTVAL,'97000', TO_DATE('12/10/2017', 'MM/DD/YYYY'),7);
+INSERT INTO donation 
+    VALUES (seqdonationid.NEXTVAL,'50400', TO_DATE('10/27/2017', 'MM/DD/YYYY'),8);
+INSERT INTO donation 
+    VALUES (seqdonationid.NEXTVAL,'74300', TO_DATE('03/17/2018', 'MM/DD/YYYY'),9);
+INSERT INTO donation 
+    VALUES (seqdonationid.NEXTVAL,'58460', TO_DATE('02/19/2018', 'MM/DD/YYYY'),13);
+INSERT INTO donation 
+    VALUES (seqdonationid.NEXTVAL,'63200', TO_DATE('02/09/2018', 'MM/DD/YYYY'),14);
+INSERT INTO donation 
+    VALUES (seqdonationid.NEXTVAL,'45540', TO_DATE('02/11/2018', 'MM/DD/YYYY'),13);
+INSERT INTO donation 
+    VALUES (seqdonationid.NEXTVAL,'57740', TO_DATE('01/11/2018', 'MM/DD/YYYY'),15);
+INSERT INTO donation 
+    VALUES (seqdonationid.NEXTVAL,'58009', TO_DATE('01/10/2018', 'MM/DD/YYYY'),7);
+
+--The code below inputs values into the schedule table 
+INSERT INTO schedule 
+VALUES (seqscheduleid.NEXTVAL,2,'03-MARCH-2014',TO_DATE('8:00', 'HH24:MI'),TO_DATE('13:00', 'HH24:MI'));
+INSERT INTO schedule 
+VALUES (seqscheduleid.NEXTVAL,3,'08-FEB-2014',TO_DATE('9:00', 'HH24:MI'),TO_DATE('12:00', 'HH24:MI'));
+INSERT INTO schedule 
+VALUES (seqscheduleid.NEXTVAL,4,'02-FEB-2015',TO_DATE('10:00','HH24:MI'),TO_DATE('14:30', 'HH24:MI'));
+INSERT INTO schedule 
+VALUES (seqscheduleid.NEXTVAL,5,'02-JAN-2015',TO_DATE('8:00','HH24:MI'),TO_DATE('16:00', 'HH24:MI'));
+INSERT INTO schedule 
+VALUES (seqscheduleid.NEXTVAL,6,'12-JAN-2016',TO_DATE('3:00', 'HH24:MI'),TO_DATE('13:00', 'HH24:MI'));
+INSERT INTO schedule 
+VALUES (seqscheduleid.NEXTVAL,7,'11-DEC-2017',TO_DATE('9:00', 'HH24:MI'),TO_DATE('12:00', 'HH24:MI'));
+INSERT INTO schedule 
+VALUES (seqscheduleid.NEXTVAL,7,'10-DEC-2017',TO_DATE('8:00', 'HH24:MI'),TO_DATE('18:00', 'HH24:MI'));
+INSERT INTO schedule 
+VALUES (seqscheduleid.NEXTVAL,8,'03-FEB-2018',TO_DATE('12:00', 'HH24:MI'),TO_DATE('14:00', 'HH24:MI'));
+INSERT INTO schedule 
+VALUES (seqscheduleid.NEXTVAL,8,'03-FEB-2018',TO_DATE('1:00', 'HH24:MI'),TO_DATE('14:00', 'HH24:MI'));
+INSERT INTO schedule 
+VALUES (seqscheduleid.NEXTVAL,9,'18-FEB-2018',TO_DATE('7:00', 'HH24:MI'),TO_DATE('14:00', 'HH24:MI'));
+INSERT INTO schedule 
+VALUES (seqscheduleid.NEXTVAL,10,'23-MAR-2018',TO_DATE('11:00', 'HH24:MI'),TO_DATE('12:00', 'HH24:MI'));
+INSERT INTO schedule 
+VALUES (seqscheduleid.NEXTVAL,10,'24-MAR-2018',TO_DATE('11:30','HH24:MI'),TO_DATE('14:00', 'HH24:MI'));
+INSERT INTO schedule 
+VALUES (seqscheduleid.NEXTVAL,11,'10-MAR-2018',TO_DATE('10:00','HH24:MI'),TO_DATE('11:00', 'HH24:MI'));
+INSERT INTO schedule 
+VALUES (seqscheduleid.NEXTVAL,11,'15-MAR-2018',TO_DATE('8:00','HH24:MI'),TO_DATE('12:00', 'HH24:MI'));
+INSERT INTO schedule 
+VALUES (seqscheduleid.NEXTVAL,11,'18-MAR-2018',TO_DATE('10:00','HH24:MI'),TO_DATE('12:00', 'HH24:MI'));
+INSERT INTO schedule 
+VALUES (seqscheduleid.NEXTVAL,12,'21-JAN-2018',TO_DATE('8:00','HH24:MI'),TO_DATE('13:00', 'HH24:MI'));
+INSERT INTO schedule 
+VALUES (seqscheduleid.NEXTVAL,11,'21-JAN-2018',TO_DATE('8:00','HH24:MI'),TO_DATE('11:00', 'HH24:MI'));
+INSERT INTO schedule 
+VALUES (seqscheduleid.NEXTVAL,16,'09-APR-2018',TO_DATE('8:00','HH24:MI'),TO_DATE('11:30', 'HH24:MI'));
+
+
+--The code below inserts values into the emergency table 
+INSERT INTO emergencycontact
+VALUES (2,17,'Dad');
+INSERT INTO emergencycontact
+VALUES (2,18,'Dad');
+INSERT INTO emergencycontact
+VALUES (3,19,'Mom');
+INSERT INTO emergencycontact
+VALUES (3,20,'Mom');
+INSERT INTO emergencycontact
+VALUES (4,21,'Mom');
+INSERT INTO emergencycontact
+VALUES (4,22,'Dad');
+INSERT INTO emergencycontact
+VALUES (5,39,'Friend');
+INSERT INTO emergencycontact
+VALUES (5,40,'Boyfriend');
+INSERT INTO emergencycontact
+VALUES (6,23,'Friend');
+INSERT INTO emergencycontact
+VALUES (6,24,'Grandma');
+INSERT INTO emergencycontact
+VALUES (7,25,'Frend');
+INSERT INTO emergencycontact
+VALUES (7,26,'Mom');
+INSERT INTO emergencycontact
+VALUES (8,27,'Brother');
+INSERT INTO emergencycontact
+VALUES (8,28,'Friend');
+INSERT INTO emergencycontact
+VALUES (9,29,'Mom');
+INSERT INTO emergencycontact
+VALUES (9,30,'Dad');
+INSERT INTO emergencycontact
+VALUES (10,31,'Friend');
+INSERT INTO emergencycontact
+VALUES (10,32,'Friend');
+INSERT INTO emergencycontact
+VALUES (11,33,'Grandpa');
+INSERT INTO emergencycontact
+VALUES (11,34,'Aunt');
+INSERT INTO emergencycontact
+VALUES (12,35,'Aunt');
+INSERT INTO emergencycontact
+VALUES (12,36,'Aunt');
+INSERT INTO emergencycontact
+VALUES (13,10,'Friend');
+INSERT INTO emergencycontact
+VALUES (13,14,'Partner');
+INSERT INTO emergencycontact
+VALUES (16,37,'Dad');
+INSERT INTO emergencycontact
+VALUES (16,38,'Mom');
+
+
+--The codes below display the managerial request for HW 3
+
+--Give me a list of donors and their total donation amount this year for all donors who donated more than the average donation.
+SELECT fname AS "First Name", lname As "Last Name", TO_CHAR(SUM(amnt),'$999,999,999') AS "Total Amount" FROM person
+INNER JOIN donation USING (personid)
+WHERE dondate >= '01-JAN-2018' AND dondate < '01-MAR-2018'
+GROUP BY fname,lname
+HAVING SUM(amnt) > (
+SELECT AVG(amnt) from donation )
+ORDER BY "Total Amount" DESC, fname,fname;
+
+--Give me a list of volunteers and their total volunteer hours this year 
+--for all volunteers who volunteer less than the average time of all volunteer hours this year.
+SELECT fname AS "First Name",lname AS "Last Name" ,SUM(ROUND(((etime-stime)*24),2)) AS "Total Hours" FROM person 
+INNER JOIN volunteer USING (personid)  INNER JOIN schedule USING (personid)
+WHERE dte >= '01-Jan-2018'
+GROUP BY fname,lname 
+HAVING SUM(ROUND(((etime-stime)*24),2)) <
+( SELECT AVG(SUM(ROUND(((etime-stime)*24),2)))FROM schedule
+WHERE dte >= '01-Jan-2018'
+GROUP BY personid)
+ORDER BY "Total Hours" DESC, fname,lname;
+
+--Jose Salvador Gomez Franco had an accident. 
+--He’s okay, but we need to have his emergency contact person come and pick him up.
+--Please provide the name, relationship, and primary phone number of both of Jose’s emergency contact people.
+
+SELECT fname AS "First Name",lname AS "Last Name",rlshp AS "Relationship",prim AS "Primary" ,pnumber "Phone Number"  
+FROM person, emergencycontact, phoneperson,phone
+WHERE person.personid = emergencycontact.emcontact
+AND person.personid = phoneperson.personid
+and phoneperson.phoneid = phone.phoneid
+and prim = 'Y'
+and person.personid in (SELECT emcontact FROM person,emergencycontact
+where fname = 'Jose' AND lname = 'Salvador Gomez Franco'
+AND person.personid = emergencycontact.personid)
+Order by lname,fname;
+
+--The Codes below display the managerial request for HW 2
+
+--Levina Wang was selected as our Outstanding Volunteer and we want to honor her at the banquet. 
+--Provide me with her permanent mailing address so that I can send her her tickets and gift certificate. 
+--I think she already went home for the break. 
+SELECT fname AS "First Name",lname AS "Last Name",addstrt,city,ste,zipcode 
+FROM person INNER JOIN personaddr USING (personid)  
+INNER JOIN addr USING (addrid) 
+WHERE addrtype = 'P'
+AND personid IN (SELECT person.personid FROM person,volunteer 
+WHERE person.personid = volunteer.personid
+AND fname = 'Levina'
+AND lname ='Wang');
+
+--I'm getting ready to run our quarterly income report.
+--Provide me with the total donation amount for each donor for the past three months (not counting this month).
+
+SELECT fname AS "First Name", lname As "Last Name", TO_CHAR(SUM(amnt),'$999,999,999') AS "Total Amount" FROM person
+INNER JOIN donation USING (personid)
+WHERE dondate >= '01-Jan-2018' AND dondate < '01-APR-2018'
+GROUP BY fname,lname
+ORDER BY "Total Amount" DESC, fname,fname;
+
+--I'm working on the next schedule. Which volunteer has worked the least (and so needs more hours) or the most (and so can drop some hours)? 
+--Provide-in the same output-the names of both volunteers and the total hours (per volunteer) worked this year.
+--List the volunteer with the most hours on top.
+--If more than one volunteer has the same amount of hours, then list all volunteers with the most/least hours.
+
+SELECT fname AS "First Name",lname AS "Last Name" ,SUM(ROUND(((etime-stime)*24),2)) AS "Total Hours" FROM person 
+INNER JOIN schedule USING (personid) 
+WHERE dte >= '01-Jan-2018'
+GROUP BY fname,lname
+HAVING SUM(ROUND(((etime-stime)*24),2)) = (
+SELECT MAX(SUM(ROUND(((etime-stime)*24),2)))FROM schedule
+WHERE dte >= '01-Jan-2018'
+GROUP BY (personid))
+OR SUM(ROUND(((etime-stime)*24),2)) = (
+SELECT MIN(SUM(ROUND(((etime-stime)*24),2)))FROM schedule
+WHERE dte >= '01-Jan-2018'
+GROUP BY (personid))
+ORDER BY "Total Hours" DESC, fname,lname;
+
+--The code below is for the managerial request for HW 1 AND incorporate the additions from HW 2.
+
+--I need to mail out our event flyer. Provide me with the name and primary mailing address for each donor.
+SELECT fname AS "First Name",lname AS "Last Name",addstrt,city,ste,zipcode FROM person,addr, personaddr, donation
+WHERE person.personid = personaddr.personid
+AND personaddr.addrid = addr.addrid
+AND person.personid = donation.personid
+AND addrtype = 'P'
+AND person.personid IN (SELECT person.personid FROM person,donation
+WHERE person.personid = donation.personid)
+ORDER BY lname;
+
+
+--Montrell Johnson wants to replace the MasterCard credit card information with his new Visa credit card. 
+--Please find Montrell's credit card information so that we can update it. Provide name and all credit card information for security verification.
+SELECT fname AS "First Name", lname AS "Last Name", cctype AS "Credit Card Type", TO_CHAR(ccacct, '9999g9999g9999g9999', 'nls_numeric_characters=.-')
+AS "Credit Card Number", 
+TO_CHAR(expdate, 'Mon-YYYY') AS "Exp Date"
+FROM creditcard INNER JOIN person USING (personid)
+WHERE fname= 'Montrell' and lname= 'Johnson';
+
+--Juanita Bautista has been a major supporter of ours and I have two complimentary tickets to an upcoming event that I'd like to give her.
+--Please get her phone number. Be sure to include her name in the output so that I know whose phone number I have.
+SELECT fname AS "First Name", lname AS "Last Name", TO_CHAR(pnumber, '999g999g9999','nls_numeric_characters=.-') 
+AS "Phone Number", ptype AS "Type" FROM person ,phoneperson,phone
+WHERE person.personid = phoneperson.personid
+AND phoneperson.phoneid = phone.phoneid
+AND prim = 'Y'
+and person.personid in (SELECT person.personid from person,donation 
+WHERE person.personid = donation.personid
+AND fname= 'Juanita' 
+AND lname=  'Bautista')
+Order by lname,fname;
